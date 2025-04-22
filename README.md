@@ -52,10 +52,38 @@ A feature-rich Todo application built with Node.js, Express, EJS, and MongoDB.
 ## Project Structure
 
 ```
-.
-├── server.js          # Main server file
-├── package.json       # Project dependencies
-├── views/            # EJS templates
-│   └── index.ejs     # Main template file
-└── README.md         # Project documentation
-``` 
+todo-app/
+│
+├── server.js              # Main server file
+├── package.json           # Project dependencies
+├── .gitignore             # Git ignore file
+│
+├── models/                # Mongoose models
+│   ├── Todo.js            # Todo model
+│   └── User.js            # User model
+│
+├── routes/                # Express routes
+│   ├── auth.js            # Authentication routes
+│   └── todos.js           # Todo CRUD routes
+│
+├── middleware/            # Express middleware
+│   └── isAuth.js          # Authentication middleware
+│
+├── controllers/           # Route controllers
+│   ├── authController.js  # Auth logic
+│   └── todoController.js  # Todo CRUD logic
+│
+├── public/                # Static files
+│   ├── css/               # CSS stylesheets
+│   │   ├── styles.css     # Main styles
+│   │   └── auth.css       # Auth page styles
+│   └── js/                # Client-side JavaScript
+│       └── main.js        # Main JavaScript file
+│
+└── views/                 # EJS templates
+    ├── partials/          # Reusable template parts
+    │   ├── header.ejs     # Header partial
+    │   └── footer.ejs     # Footer partial
+    ├── index.ejs          # Todo list page
+    ├── login.ejs          # Login page
+    └── register.ejs       # Registration page

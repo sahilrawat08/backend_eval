@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Todo App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <% if (locals.authPage) { %>
+        <link rel="stylesheet" href="/css/auth.css">
+    <% } %>
+</head>
+<body>
+    <div class="app-container">
+        <% if (!locals.authPage) { %>
+            <header class="app-header">
+                <div class="header-content">
+                    <h1>Todo List</h1>
+                    <div class="user-menu">
+                        <span class="username">Welcome, <%= username %></span>
+                        <form action="/logout" method="POST">
+                            <button type="submit" class="btn-logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </header>
+        <% } %>
+        
+        <main class="<%= locals.authPage ? '' : 'app-main' %>">

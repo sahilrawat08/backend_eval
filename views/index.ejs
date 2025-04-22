@@ -3,264 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Todo App</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f0f2f5;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #1a73e8;
-            margin-bottom: 20px;
-        }
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .filter-group {
-            flex: 1;
-            min-width: 150px;
-        }
-        .filter-group select, .filter-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .todo-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-        .todo-input {
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .todo-button {
-            padding: 8px 16px;
-            background-color: #1a73e8;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            grid-column: 1 / -1;
-        }
-        .todo-button:hover {
-            background-color: #1557b0;
-        }
-        .todo-list {
-            list-style: none;
-            padding: 0;
-        }
-        .todo-item {
-            display: grid;
-            grid-template-columns: auto 1fr auto auto;
-            gap: 10px;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            background-color: #fff;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        .todo-item:last-child {
-            border-bottom: none;
-        }
-        .todo-checkbox {
-            margin-right: 10px;
-        }
-        .todo-content {
-            display: flex;
-            flex-direction: column;
-        }
-        .todo-title {
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-        .todo-meta {
-            display: flex;
-            gap: 10px;
-            font-size: 12px;
-            color: #666;
-        }
-        .todo-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .priority {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .priority-low {
-            background-color: #e6f7ff;
-            color: #1890ff;
-        }
-        .priority-medium {
-            background-color: #fff7e6;
-            color: #fa8c16;
-        }
-        .priority-high {
-            background-color: #fff1f0;
-            color: #f5222d;
-        }
-        .delete-button {
-            padding: 4px 8px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .delete-button:hover {
-            background-color: #c82333;
-        }
-        .tags {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin-top: 5px;
-        }
-        .tag {
-            background-color: #e6f7ff;
-            color: #1890ff;
-            padding: 2px 6px;
-            border-radius: 12px;
-            font-size: 12px;
-        }
-        .completed {
-            opacity: 0.7;
-        }
-        .completed .todo-title {
-            text-decoration: line-through;
-            color: #888;
-        }
-    </style>
+    <title>Todo App</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Enhanced Todo List</h1>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>Todo List</h1>
+                <div class="user-menu">
+                    <span class="username">Welcome, <%= username %></span>
+                    <form action="/logout" method="POST">
+                        <button type="submit" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </header>
         
-        <!-- Filters -->
-        <form action="/" method="GET" class="filters">
-            <div class="filter-group">
-                <input type="text" name="search" placeholder="Search todos..." value="<%= filters.search || '' %>">
-            </div>
-            <div class="filter-group">
-                <select name="category">
-                    <option value="">All Categories</option>
-                    <% categories.forEach(category => { %>
-                        <option value="<%= category %>" <%= filters.category === category ? 'selected' : '' %>>
-                            <%= category || 'Uncategorized' %>
-                        </option>
-                    <% }); %>
-                </select>
-            </div>
-            <div class="filter-group">
-                <select name="priority">
-                    <option value="">All Priorities</option>
-                    <% priorities.forEach(priority => { %>
-                        <option value="<%= priority %>" <%= filters.priority === priority ? 'selected' : '' %>>
-                            <%= priority.charAt(0).toUpperCase() + priority.slice(1) %>
-                        </option>
-                    <% }); %>
-                </select>
-            </div>
-            <div class="filter-group">
-                <select name="completed">
-                    <option value="">All Status</option>
-                    <option value="false" <%= filters.completed === 'false' ? 'selected' : '' %>>Active</option>
-                    <option value="true" <%= filters.completed === 'true' ? 'selected' : '' %>>Completed</option>
-                </select>
-            </div>
-            <button type="submit" class="todo-button">Apply Filters</button>
-        </form>
-
-        <!-- Todo Form -->
-        <form action="/todos" method="POST" class="todo-form">
-            <div class="form-group full-width">
-                <input type="text" name="title" class="todo-input" placeholder="Add a new task..." required>
-            </div>
-            <div class="form-group">
-                <input type="date" name="dueDate" class="todo-input">
-            </div>
-            <div class="form-group">
-                <select name="priority" class="todo-input">
-                    <option value="medium">Medium Priority</option>
-                    <option value="high">High Priority</option>
-                    <option value="low">Low Priority</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="text" name="category" class="todo-input" placeholder="Category">
-            </div>
-            <div class="form-group">
-                <input type="text" name="tags" class="todo-input" placeholder="Tags (comma separated)">
-            </div>
-            <button type="submit" class="todo-button">Add Task</button>
-        </form>
-
-        <!-- Todo List -->
-        <ul class="todo-list">
-            <% todos.forEach(todo => { %>
-                <li class="todo-item <%= todo.completed ? 'completed' : '' %>">
-                    <form action="/todos/<%= todo._id %>/toggle" method="POST" style="display: inline;">
-                        <input type="checkbox" 
-                               class="todo-checkbox"
-                               onChange="this.form.submit()"
-                               <%= todo.completed ? 'checked' : '' %>>
-                    </form>
-                    <div class="todo-content">
-                        <div class="todo-title"><%= todo.title %></div>
-                        <div class="todo-meta">
-                            <% if (todo.dueDate) { %>
-                                <span>📅 <%= new Date(todo.dueDate).toLocaleDateString() %></span>
-                            <% } %>
-                            <% if (todo.category) { %>
-                                <span>📁 <%= todo.category %></span>
-                            <% } %>
-                            <span class="priority priority-<%= todo.priority %>">
-                                <%= todo.priority.charAt(0).toUpperCase() + todo.priority.slice(1) %>
-                            </span>
-                        </div>
-                        <% if (todo.tags && todo.tags.length > 0) { %>
-                            <div class="tags">
-                                <% todo.tags.forEach(tag => { %>
-                                    <span class="tag"><%= tag %></span>
-                                <% }); %>
+        <main class="app-main">
+            <!-- Filters -->
+            <section class="filters-section">
+                <h2>Filter Tasks</h2>
+                <form action="/" method="GET" class="filters-form">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="search">Search</label>
+                            <div class="search-input">
+                                <input type="text" id="search" name="search" placeholder="Search todos..." value="<%= filters.search || '' %>">
+                                <button type="submit" class="search-btn">
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </div>
-                        <% } %>
+                        </div>
                     </div>
-                    <form action="/todos/<%= todo._id %>/delete" method="POST" style="display: inline;">
-                        <button type="submit" class="delete-button">Delete</button>
-                    </form>
-                </li>
-            <% }); %>
-        </ul>
+                    
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="category">Category</label>
+                            <select id="category" name="category">
+                                <option value="">All Categories</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category %>" <%= filters.category === category ? 'selected' : '' %>>
+                                        <%= category || 'Uncategorized' %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="priority">Priority</label>
+                            <select id="priority" name="priority">
+                                <option value="">All Priorities</option>
+                                <% priorities.forEach(priority => { %>
+                                    <option value="<%= priority %>" <%= filters.priority === priority ? 'selected' : '' %>>
+                                        <%= priority.charAt(0).toUpperCase() + priority.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="completed">Status</label>
+                            <select id="completed" name="completed">
+                                <option value="">All Status</option>
+                                <option value="false" <%= filters.completed === 'false' ? 'selected' : '' %>>Active</option>
+                                <option value="true" <%= filters.completed === 'true' ? 'selected' : '' %>>Completed</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter">Apply Filters</button>
+                            <a href="/" class="btn-clear">Clear</a>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- New Todo Form -->
+            <section class="new-todo-section">
+                <h2>Add New Task</h2>
+                <form action="/todos" method="POST" class="todo-form">
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="title">Task Title</label>
+                            <input type="text" id="title" name="title" placeholder="What needs to be done?" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dueDate">Due Date</label>
+                            <input type="date" id="dueDate" name="dueDate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="priority-select">Priority</label>
+                            <select id="priority-select" name="priority">
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category-input">Category</label>
+                            <input type="text" id="category-input" name="category" placeholder="e.g. Work, Personal">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tags-input">Tags</label>
+                            <input type="text" id="tags-input" name="tags" placeholder="e.g. urgent, meeting, @home">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-add">
+                            <i class="fas fa-plus"></i> Add Task
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Todo List -->
+            <section class="todos-section">
+                <h2>Your Tasks</h2>
+                <% if (todos.length === 0) { %>
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list empty-icon"></i>
+                        <p>No tasks found. Add your first task above!</p>
+                    </div>
+                <% } else { %>
+                    <ul class="todo-list">
+                        <% todos.forEach(todo => { %>
+                            <li class="todo-item <%= todo.completed ? 'completed' : '' %>">
+                                <div class="todo-checkbox">
+                                    <form action="/todos/<%= todo._id %>/toggle" method="POST">
+                                        <button type="submit" class="btn-toggle">
+                                            <% if (todo.completed) { %>
+                                                <i class="fas fa-check-circle"></i>
+                                            <% } else { %>
+                                                <i class="far fa-circle"></i>
+                                            <% } %>
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                <div class="todo-content">
+                                    <h3 class="todo-title"><%= todo.title %></h3>
+                                    
+                                    <div class="todo-meta">
+                                        <% if (todo.dueDate) { %>
+                                            <span class="meta-item">
+                                                <i class="far fa-calendar-alt"></i>
+                                                <%= new Date(todo.dueDate).toLocaleDateString() %>
+                                            </span>
+                                        <% } %>
+                                        
+                                        <% if (todo.category) { %>
+                                            <span class="meta-item">
+                                                <i class="far fa-folder"></i>
+                                                <%= todo.category %>
+                                            </span>
+                                        <% } %>
+                                        
+                                        <span class="priority-badge priority-<%= todo.priority %>">
+                                            <%= todo.priority.charAt(0).toUpperCase() + todo.priority.slice(1) %>
+                                        </span>
+                                    </div>
+                                    
+                                    <% if (todo.tags && todo.tags.length > 0) { %>
+                                        <div class="tags">
+                                            <% todo.tags.forEach(tag => { %>
+                                                <span class="tag"><%= tag %></span>
+                                            <% }); %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="todo-actions">
+                                    <form action="/todos/<%= todo._id %>/delete" method="POST">
+                                        <button type="submit" class="btn-delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } %>
+            </section>
+        </main>
+        
+        <footer class="app-footer">
+            <p>© 2025 Enhanced Todo App</p>
+        </footer>
     </div>
 </body>
-</html> 
+</html>
