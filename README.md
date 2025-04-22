@@ -4,6 +4,8 @@ A feature-rich Todo application built with Node.js, Express, EJS, and MongoDB.
 
 ## Features
 
+
+- User Authentication
 - Create, read, update, and delete tasks
 - Mark tasks as complete/incomplete
 - Set due dates for tasks
@@ -36,10 +38,7 @@ A feature-rich Todo application built with Node.js, Express, EJS, and MongoDB.
    ```bash
    npm start
    ```
-   For development with auto-reload:
-   ```bash
-   npm run dev
-   ```
+   
 
 ## Technologies Used
 
